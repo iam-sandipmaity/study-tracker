@@ -247,12 +247,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           })));
         }
 
-        // Load stats
-        const { data: statsData } = await supabase
+        // Load stats — auto-create if missing (replaces the fragile DB trigger)
+        const { data: statsData, error: statsError } = await supabase
           .from('user_stats')
           .select('*')
           .eq('user_id', userId)
-          .single();
+          .maybeSingle();
         
         if (statsData) {
           setStats({
@@ -262,6 +262,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             bestStreak: statsData.best_streak,
             lastStudyDate: statsData.last_study_date,
           });
+        } else if (statsError || !statsData) {
+          // First login — create user_stats row
+          await supabase.from('user_stats').insert({
+            user_id: userId,
+            xp: 0,
+            level: 1,
+            streak: 0,
+            best_streak: 0,
+          } as never);
         }
 
         // Load notes
