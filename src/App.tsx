@@ -17,6 +17,7 @@ import { Habits } from './components/Habits';
 import { Notes } from './components/Notes';
 import { Achievements } from './components/Achievements';
 import { SessionHistory } from './components/SessionHistory';
+import { Logo } from './components/Logo';
 
 const AppContent: React.FC = () => {
   const {
@@ -103,9 +104,7 @@ const AppContent: React.FC = () => {
         <div className="p-6 flex flex-col space-y-7">
           {/* Logo Brand */}
           <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-xl bg-brand-500 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
-              <LucideIcon name="Brain" size={16} />
-            </div>
+            <Logo size="sm" />
             <span className="font-extrabold tracking-tight text-neutral-900 dark:text-neutral-50 text-sm">
               Study Tracker
             </span>

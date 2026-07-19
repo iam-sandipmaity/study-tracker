@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { BookOpen, ArrowRight, Loader2, Zap, BarChart2, Trophy, Clock, Target, Flame, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Loader2, Zap, BarChart2, Trophy, Clock, Target, Flame, CheckCircle2 } from 'lucide-react';
+import { Logo } from './Logo';
 
 // SVG icon for Google
 const GoogleIcon = () => (
@@ -41,9 +42,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
           
           <div className="relative z-10 max-w-md px-12">
             <div className="flex items-center gap-3 mb-12">
-              <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center">
-                <BookOpen className="w-5 h-5 text-white" />
-              </div>
+              <Logo size="md" />
               <span className="text-lg font-bold text-white tracking-tight">Study Tracker</span>
             </div>
 
@@ -81,9 +80,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
           <div className="w-full max-w-sm">
             {/* Mobile-only logo */}
             <div className="lg:hidden flex items-center gap-2.5 mb-10">
-              <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center">
-                <BookOpen className="w-4 h-4 text-white" />
-              </div>
+              <Logo size="sm" />
               <span className="text-base font-bold text-neutral-900 dark:text-white tracking-tight">Study Tracker</span>
             </div>
 
@@ -186,9 +183,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
         <div className="relative z-10 max-w-lg px-12">
           {/* Logo */}
           <div className="flex items-center gap-3 mb-14">
-            <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center">
-              <BookOpen className="w-5 h-5 text-white" />
-            </div>
+            <Logo size="md" />
             <span className="text-lg font-bold text-white tracking-tight">Study Tracker</span>
           </div>
 
@@ -262,9 +257,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
         <div className="w-full max-w-sm">
           {/* Mobile-only logo */}
           <div className="lg:hidden flex items-center gap-2.5 mb-10">
-            <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center">
-              <BookOpen className="w-4 h-4 text-white" />
-            </div>
+            <Logo size="sm" />
             <span className="text-base font-bold text-neutral-900 dark:text-white tracking-tight">Study Tracker</span>
           </div>
 
