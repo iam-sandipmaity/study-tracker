@@ -1,32 +1,83 @@
-# React + TypeScript + Vite
+# Study Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A gamified study tracker web app with focus timer, task management, subject planning, analytics, habit tracking, and study notes — all with a polished dark/light UI and offline PWA support.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Focus Timer** — Pomodoro (25m), short break, long break, or custom duration with ambient sounds (white noise, rainfall, ocean waves, focus hum) and fullscreen focus mode
+- **Task Board** — Kanban-style board (To Do / In Progress / Completed) with subjects, priorities, due dates, and estimated vs actual durations
+- **Subject Plans** — Track academic subjects with exam dates, target scores, study hours, and task completion progress
+- **Analytics** — Weekly bar chart, subject pie chart, GitHub-style heatmap, and stats cards (avg session, completion rate, most active day, peak focus time)
+- **Calendar** — Monthly view with task deadline dots, exam indicators, and a daily agenda sidebar
+- **Habit Tracker** — 6 daily habit categories across a 7-day rolling window with toggle-based logging
+- **Study Notes** — Markdown editor with split-pane preview, subject tagging, and full-text search
+- **Gamification** — XP system, leveling (sqrt-based), 7 achievement badges, confetti + sound effects on unlocks
+- **Command Palette** — Cmd/Ctrl+K powered quick-access to all features
+- **Dark/Light Theme** — Class-based toggle with system preference detection, persisted across sessions
+- **PWA** — Installable as a standalone app with service worker for offline caching
+- **Persistence** — All data saved to localStorage automatically
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Layer | Technology |
+|-------|-----------|
+| Framework | React 19 + TypeScript |
+| Bundler | Vite 8 |
+| Styling | Tailwind CSS 4 (CSS-first config) |
+| Charts | Recharts |
+| Icons | Lucide React |
+| Audio | Web Audio API (procedural ambient sounds) |
 
-## Expanding the Oxlint configuration
+## Getting Started
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+```bash
+# Install dependencies
+npm install
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+# Start dev server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Project Structure
+
+```
+src/
+  App.tsx                  # Root layout, sidebar, mobile nav, routing
+  main.tsx                 # Entry point
+  index.css                # Tailwind config, custom theme, animations
+  types.ts                 # TypeScript interfaces
+  mockData.ts              # Initial seed data
+  audioSynthesis.ts        # Web Audio API ambient sound manager
+  utils/
+    confetti.ts            # Canvas-based confetti animation
+  context/
+    AppContext.tsx          # Global state (React Context + localStorage)
+  components/
+    Dashboard.tsx          # Home overview with stats and quick-add
+    Timer.tsx              # Focus timer with presets and ambient sounds
+    Tasks.tsx              # Kanban task board
+    Subjects.tsx           # Subject planning cards
+    Analytics.tsx          # Charts and heatmap
+    Calendar.tsx           # Monthly calendar with agenda
+    Habits.tsx             # Daily habit tracker table
+    Notes.tsx              # Markdown note editor
+    Achievements.tsx       # XP, levels, and badge grid
+    CommandPalette.tsx     # Cmd+K command menu
+    NotificationCenter.tsx # Notification dropdown
+    LucideIcon.tsx         # Dynamic icon resolver
+public/
+  favicon.svg              # App icon (purple lightning bolt)
+  icons.svg                # Social icon sprite
+  manifest.json            # PWA manifest
+  sw.js                    # Service worker for offline caching
+```
+
+## License
+
+MIT

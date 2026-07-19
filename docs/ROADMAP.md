@@ -1,0 +1,45 @@
+# Roadmap
+
+Planned features and improvements for Study Tracker.
+
+## Phase 1 — Auth & Multi-User (Next)
+
+- [ ] Integrate authentication service (Firebase Auth, Supabase, or Clerk)
+- [ ] User registration, login, and logout flows
+- [ ] Move data from localStorage to cloud database (Firestore / Supabase)
+- [ ] Per-user data isolation and syncing
+- [ ] Profile page with avatar and display name
+- [ ] Session persistence across devices
+
+## Phase 2 — Enhanced Study Tools
+
+- [ ] Flashcard system with spaced repetition (SM-2 algorithm)
+- [ ] Pomodoro session history with detailed logs
+- [ ] Study session calendar view (timeline of past sessions)
+- [ ] Custom ambient sound uploads (user-provided audio files)
+- [ ] Focus session tagging and categorization
+- [ ] Daily/weekly study reports (email or in-app)
+
+## Phase 3 — Social & Collaboration
+
+- [ ] Study groups / shared subject plans
+- [ ] Leaderboards for XP and streaks (within groups)
+- [ ] Shared notes and collaborative editing
+- [ ] Accountability partners (streak reminders)
+- [ ] Export study data as PDF/CSV
+
+## Phase 4 — Intelligence & Automation
+
+- [ ] Smart study schedule suggestions based on exam proximity
+- [ ] Adaptive Pomodoro durations based on focus patterns
+- [ ] Auto-categorization of tasks using NLP
+- [ ] Predictive exam readiness scoring
+- [ ] Integration with Google Calendar / Notion / Obsidian
+
+## Phase 5 — Platform
+
+- [ ] Native mobile apps (React Native or Capacitor)
+- [ ] Browser extension for quick task capture
+- [ ] Desktop widget for timer and streak display
+- [ ] API for third-party integrations
+- [ ] Plugin system for custom study tools
