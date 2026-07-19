@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { BookOpen, ArrowRight, Loader2, Zap, BarChart2, Trophy } from 'lucide-react';
+import { BookOpen, ArrowRight, Loader2, Zap, BarChart2, Trophy, Clock, Target, Flame, CheckCircle2 } from 'lucide-react';
 
 // SVG icon for Google
 const GoogleIcon = () => (
@@ -176,48 +176,85 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-neutral-950 flex">
       {/* Left panel - branding (hidden on mobile) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-neutral-900 dark:bg-black relative overflow-hidden items-center justify-center">
+      <div className="hidden lg:flex lg:w-[55%] bg-neutral-900 dark:bg-black relative overflow-hidden items-center justify-center">
         {/* Subtle grid pattern */}
         <div className="absolute inset-0 opacity-[0.03]" style={{
           backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
           backgroundSize: '40px 40px'
         }} />
         
-        <div className="relative z-10 max-w-md px-12">
-          <div className="flex items-center gap-3 mb-12">
+        <div className="relative z-10 max-w-lg px-12">
+          {/* Logo */}
+          <div className="flex items-center gap-3 mb-14">
             <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center">
               <BookOpen className="w-5 h-5 text-white" />
             </div>
             <span className="text-lg font-bold text-white tracking-tight">Study Tracker</span>
           </div>
 
-          <h2 className="text-4xl font-bold text-white leading-tight mb-6">
-            Track smarter.<br />
-            <span className="text-amber-400">Study better.</span>
+          {/* Headline */}
+          <h2 className="text-[2.75rem] font-bold text-white leading-[1.1] mb-5 tracking-tight">
+            Focus. Track.<br />
+            <span className="text-amber-400">Achieve.</span>
           </h2>
-          <p className="text-neutral-400 text-base leading-relaxed mb-10">
-            Focus sessions, task management, and progress analytics — all in one place. Built for students who mean business.
+          <p className="text-neutral-400 text-[15px] leading-relaxed mb-10 max-w-md">
+            The minimal study companion that helps you build consistency, stay focused, and actually see your progress over time.
           </p>
 
-          {/* Feature pills */}
-          <div className="space-y-3">
-            {[
-              { icon: Zap, text: 'Pomodoro timer with session notes' },
-              { icon: BarChart2, text: 'Visual progress analytics' },
-              { icon: Trophy, text: 'Achievements & streaks' },
-            ].map((feat, i) => (
-              <div key={i} className="flex items-center gap-3 text-sm text-neutral-300">
-                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
-                  <feat.icon className="w-4 h-4 text-amber-400" />
+          {/* Mock Dashboard Preview */}
+          <div className="bg-neutral-800/50 backdrop-blur-sm rounded-2xl border border-neutral-700/50 p-5 mb-10">
+            {/* Mini stats row */}
+            <div className="grid grid-cols-3 gap-3 mb-4">
+              {[
+                { icon: Flame, label: 'Streak', value: '12 days', color: 'text-orange-400' },
+                { icon: Clock, label: 'This week', value: '8.5h', color: 'text-amber-400' },
+                { icon: Target, label: 'Level', value: '14', color: 'text-emerald-400' },
+              ].map((stat, i) => (
+                <div key={i} className="bg-neutral-900/60 rounded-xl p-3 text-center">
+                  <stat.icon className={`w-4 h-4 ${stat.color} mx-auto mb-1.5`} />
+                  <p className="text-white text-sm font-bold">{stat.value}</p>
+                  <p className="text-neutral-500 text-[10px] font-medium">{stat.label}</p>
                 </div>
-                <span>{feat.text}</span>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            {/* Mini task list */}
+            <div className="space-y-2">
+              {[
+                { text: 'Review Chapter 5 notes', done: true },
+                { text: 'Practice problem set', done: true },
+                { text: 'Write essay introduction', done: false },
+              ].map((task, i) => (
+                <div key={i} className="flex items-center gap-2.5 bg-neutral-900/40 rounded-lg px-3 py-2">
+                  <CheckCircle2 className={`w-3.5 h-3.5 ${task.done ? 'text-emerald-400' : 'text-neutral-600'}`} />
+                  <span className={`text-xs ${task.done ? 'text-neutral-500 line-through' : 'text-neutral-300'}`}>
+                    {task.text}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom features */}
+          <div className="flex items-center gap-6 text-xs text-neutral-500">
+            <span className="flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5 text-amber-400" />
+              Pomodoro Timer
+            </span>
+            <span className="flex items-center gap-1.5">
+              <BarChart2 className="w-3.5 h-3.5 text-amber-400" />
+              Analytics
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Trophy className="w-3.5 h-3.5 text-amber-400" />
+              Achievements
+            </span>
           </div>
         </div>
 
-        {/* Decorative orb */}
-        <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-amber-500/10 blur-[120px]" />
+        {/* Decorative elements */}
+        <div className="absolute top-[15%] right-[-5%] w-[400px] h-[400px] rounded-full bg-amber-500/8 blur-[100px]" />
+        <div className="absolute bottom-[-15%] left-[-5%] w-[300px] h-[300px] rounded-full bg-amber-600/5 blur-[80px]" />
       </div>
 
       {/* Right panel - form */}
