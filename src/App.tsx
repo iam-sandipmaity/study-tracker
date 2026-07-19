@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { OnboardingTour } from './components/OnboardingTour';
+import { DataExportImport } from './components/DataExportImport';
 import { CommandPalette } from './components/CommandPalette';
 import { NotificationCenter } from './components/NotificationCenter';
 import { LucideIcon } from './components/LucideIcon';
@@ -26,6 +28,22 @@ const AppContent: React.FC = () => {
     stats,
     soundType
   } = useApp();
+
+  const { user, signOut, isConfigured } = useAuth();
+
+  // Onboarding state
+  const [showTour, setShowTour] = useState(() => {
+    return isConfigured && !localStorage.getItem('study_tour_completed');
+  });
+  const [showExportImport, setShowExportImport] = useState(false);
+
+  const completeTour = () => {
+    localStorage.setItem('study_tour_completed', 'true');
+    setShowTour(false);
+  };
+
+  // Get user's display name from Supabase metadata
+  const userDisplayName = (user?.user_metadata?.display_name as string) || user?.email?.split('@')[0] || 'Scholar';
 
   // Navigation Items definitions
   const navItems = [
@@ -120,7 +138,7 @@ const AppContent: React.FC = () => {
               {stats.level}
             </div>
             <div className="min-w-0 flex-1 text-left">
-              <p className="text-[10px] font-bold text-neutral-700 dark:text-neutral-250 truncate">Scholar</p>
+              <p className="text-[10px] font-bold text-neutral-700 dark:text-neutral-250 truncate">{userDisplayName}</p>
               <div className="flex items-center gap-2.5 mt-0.5">
                 <span className="text-[9px] text-neutral-400 dark:text-neutral-500 font-semibold">{stats.xp} XP</span>
                 <span className="h-1 w-1 bg-neutral-300 dark:bg-neutral-750 rounded-full" />
@@ -129,6 +147,16 @@ const AppContent: React.FC = () => {
                 </span>
               </div>
             </div>
+            {/* Logout button */}
+            {isConfigured && (
+              <button
+                onClick={() => signOut()}
+                className="p-1.5 text-neutral-400 hover:text-red-500 dark:hover:text-red-400 rounded-lg transition-colors"
+                title="Sign out"
+              >
+                <LucideIcon name="LogOut" size={14} />
+              </button>
+            )}
           </div>
         </div>
       </aside>
@@ -156,6 +184,15 @@ const AppContent: React.FC = () => {
                 Audio: {soundType}
               </span>
             )}
+
+            {/* Export/Import button */}
+            <button
+              onClick={() => setShowExportImport(true)}
+              className="p-2 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-150 dark:hover:bg-neutral-800 rounded-xl transition-all duration-200 focus:outline-hidden"
+              title="Backup & Restore"
+            >
+              <LucideIcon name="HardDrive" size={18} />
+            </button>
 
             {/* Raycast Trigger Help Tag */}
             <button
@@ -228,6 +265,12 @@ const AppContent: React.FC = () => {
 
       {/* Global Command Palette Dialog */}
       <CommandPalette />
+
+      {/* Onboarding Tour */}
+      {showTour && <OnboardingTour onComplete={completeTour} />}
+
+      {/* Export/Import Modal */}
+      {showExportImport && <DataExportImport onClose={() => setShowExportImport(false)} />}
     </div>
   );
 };
