@@ -69,11 +69,11 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-warm-50 text-neutral-800 dark:bg-neutral-900 dark:text-neutral-200 font-sans selection:bg-brand-100 dark:selection:bg-brand-950/20 transition-colors duration-300 flex flex-col md:flex-row relative">
+    <div className="min-h-screen bg-neutral-warm-50 text-neutral-800 dark:bg-neutral-900 dark:text-neutral-200 font-sans selection:bg-brand-100 dark:selection:bg-brand-950/20 transition-colors duration-300 flex flex-col md:flex-row relative overflow-x-hidden">
       
       {/* Dynamic Background Glows */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-brand-200/20 dark:bg-brand-900/5 blur-[120px] pointer-events-none -z-10" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-200/10 dark:bg-emerald-950/5 blur-[120px] pointer-events-none -z-10" />
+      <div className="absolute top-[-10%] left-0 w-[50%] h-[50%] rounded-full bg-brand-200/20 dark:bg-brand-900/5 blur-[120px] pointer-events-none -z-10" />
+      <div className="absolute bottom-[-10%] right-0 w-[50%] h-[50%] rounded-full bg-emerald-200/10 dark:bg-emerald-950/5 blur-[120px] pointer-events-none -z-10" />
 
       {/* 1. Sidebar (Desktop Navigation) */}
       <aside className="hidden md:flex md:w-64 border-r border-neutral-200/60 dark:border-neutral-800/80 bg-white dark:bg-neutral-900/90 backdrop-blur-md flex-col justify-between shrink-0 sticky top-0 h-screen z-20">
