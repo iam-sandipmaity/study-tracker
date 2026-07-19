@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { BookOpen, Mail, Lock, User, ArrowRight, Loader2, RefreshCw } from 'lucide-react';
+import { BookOpen, ArrowRight, Loader2, Zap, BarChart2, Trophy } from 'lucide-react';
 
-// SVG icon for Google (inline to avoid extra deps)
+// SVG icon for Google
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24">
     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
@@ -30,26 +30,81 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
 
   if (!isConfigured) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 p-4">
-        <div className="w-full max-w-md">
-          <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-200/50 dark:border-slate-700/50 p-8 text-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <BookOpen className="w-8 h-8 text-white" />
+      <div className="min-h-screen bg-stone-50 dark:bg-neutral-950 flex">
+        {/* Left panel - branding */}
+        <div className="hidden lg:flex lg:w-1/2 bg-neutral-900 dark:bg-black relative overflow-hidden items-center justify-center">
+          {/* Subtle grid pattern */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{
+            backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+            backgroundSize: '40px 40px'
+          }} />
+          
+          <div className="relative z-10 max-w-md px-12">
+            <div className="flex items-center gap-3 mb-12">
+              <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center">
+                <BookOpen className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-lg font-bold text-white tracking-tight">Study Tracker</span>
             </div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Study Tracker</h1>
-            <p className="text-slate-600 dark:text-slate-400 mb-6">
-              Supabase is not configured. Running in demo mode with local storage.
+
+            <h2 className="text-4xl font-bold text-white leading-tight mb-6">
+              Track smarter.<br />
+              <span className="text-amber-400">Study better.</span>
+            </h2>
+            <p className="text-neutral-400 text-base leading-relaxed mb-10">
+              Focus sessions, task management, and progress analytics — all in one place. Built for students who mean business.
             </p>
-            <button
-              onClick={onSuccess}
-              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
-            >
-              Continue in Demo Mode
-              <ArrowRight className="w-5 h-5" />
-            </button>
-            <p className="text-sm text-slate-500 dark:text-slate-500 mt-4">
-              Data will be stored locally in your browser.
-            </p>
+
+            {/* Feature pills */}
+            <div className="space-y-3">
+              {[
+                { icon: Zap, text: 'Pomodoro timer with session notes' },
+                { icon: BarChart2, text: 'Visual progress analytics' },
+                { icon: Trophy, text: 'Achievements & streaks' },
+              ].map((feat, i) => (
+                <div key={i} className="flex items-center gap-3 text-sm text-neutral-300">
+                  <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                    <feat.icon className="w-4 h-4 text-amber-400" />
+                  </div>
+                  <span>{feat.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Decorative orb */}
+          <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-amber-500/10 blur-[120px]" />
+        </div>
+
+        {/* Right panel - form */}
+        <div className="flex-1 flex items-center justify-center p-8">
+          <div className="w-full max-w-sm">
+            {/* Mobile-only logo */}
+            <div className="lg:hidden flex items-center gap-2.5 mb-10">
+              <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center">
+                <BookOpen className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-base font-bold text-neutral-900 dark:text-white tracking-tight">Study Tracker</span>
+            </div>
+
+            <div className="animate-slide-up">
+              <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">Welcome back</h1>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-8">
+                Supabase is not configured. Running in demo mode.
+              </p>
+
+              <button
+                onClick={onSuccess}
+                className="w-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-semibold py-3 px-6 rounded-xl hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-all duration-200 flex items-center justify-center gap-2 group"
+              >
+                Continue in Demo Mode
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+
+              <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-4 text-center">
+                Data will be stored locally in your browser.
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -68,7 +123,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
         if (error) {
           setError(error.message);
         } else {
-          setSuccess('Check your email for a confirmation link! You can also resend below if needed.');
+          setSuccess('Check your email for a confirmation link!');
           setMode('login');
         }
       } else if (mode === 'resend') {
@@ -76,15 +131,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
         if (error) {
           setError(error.message);
         } else {
-          setSuccess('Confirmation email sent! Check your inbox (and spam folder).');
-          // Start cooldown
+          setSuccess('Confirmation email sent! Check your inbox.');
           setResendCooldown(60);
           const timer = setInterval(() => {
             setResendCooldown(prev => {
-              if (prev <= 1) {
-                clearInterval(timer);
-                return 0;
-              }
+              if (prev <= 1) { clearInterval(timer); return 0; }
               return prev - 1;
             });
           }, 1000);
@@ -120,228 +171,202 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
       setError(error.message);
       setSocialLoading(false);
     }
-    // If successful, the page will redirect to Google
   };
 
-  const modeTitle = mode === 'login' ? 'Welcome Back' : mode === 'signup' ? 'Create Account' : 'Resend Confirmation';
-  const modeSubtitle = mode === 'login'
-    ? 'Sign in to sync your study data across devices'
-    : mode === 'signup'
-      ? 'Start tracking your study progress'
-      : 'Enter the email you signed up with';
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-200/50 dark:border-slate-700/50 p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <BookOpen className="w-8 h-8 text-white" />
+    <div className="min-h-screen bg-stone-50 dark:bg-neutral-950 flex">
+      {/* Left panel - branding (hidden on mobile) */}
+      <div className="hidden lg:flex lg:w-1/2 bg-neutral-900 dark:bg-black relative overflow-hidden items-center justify-center">
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+          backgroundSize: '40px 40px'
+        }} />
+        
+        <div className="relative z-10 max-w-md px-12">
+          <div className="flex items-center gap-3 mb-12">
+            <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center">
+              <BookOpen className="w-5 h-5 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{modeTitle}</h1>
-            <p className="text-slate-600 dark:text-slate-400 mt-2">{modeSubtitle}</p>
+            <span className="text-lg font-bold text-white tracking-tight">Study Tracker</span>
           </div>
 
-          {/* Mode Toggle (only for login/signup) */}
-          {mode !== 'resend' && (
-            <div className="flex bg-slate-100 dark:bg-slate-800 rounded-xl p-1 mb-6">
-              <button
-                type="button"
-                onClick={() => { setMode('login'); resetForm(); }}
-                className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  mode === 'login'
-                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                Sign In
-              </button>
-              <button
-                type="button"
-                onClick={() => { setMode('signup'); resetForm(); }}
-                className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  mode === 'signup'
-                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
-              >
-                Sign Up
-              </button>
-            </div>
-          )}
+          <h2 className="text-4xl font-bold text-white leading-tight mb-6">
+            Track smarter.<br />
+            <span className="text-amber-400">Study better.</span>
+          </h2>
+          <p className="text-neutral-400 text-base leading-relaxed mb-10">
+            Focus sessions, task management, and progress analytics — all in one place. Built for students who mean business.
+          </p>
 
-          {/* Back button for resend mode */}
-          {mode === 'resend' && (
+          {/* Feature pills */}
+          <div className="space-y-3">
+            {[
+              { icon: Zap, text: 'Pomodoro timer with session notes' },
+              { icon: BarChart2, text: 'Visual progress analytics' },
+              { icon: Trophy, text: 'Achievements & streaks' },
+            ].map((feat, i) => (
+              <div key={i} className="flex items-center gap-3 text-sm text-neutral-300">
+                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                  <feat.icon className="w-4 h-4 text-amber-400" />
+                </div>
+                <span>{feat.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Decorative orb */}
+        <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-amber-500/10 blur-[120px]" />
+      </div>
+
+      {/* Right panel - form */}
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="w-full max-w-sm">
+          {/* Mobile-only logo */}
+          <div className="lg:hidden flex items-center gap-2.5 mb-10">
+            <div className="w-9 h-9 rounded-xl bg-amber-500 flex items-center justify-center">
+              <BookOpen className="w-4 h-4 text-white" />
+            </div>
+            <span className="text-base font-bold text-neutral-900 dark:text-white tracking-tight">Study Tracker</span>
+          </div>
+
+          <div className="animate-slide-up">
+            <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">Welcome back</h1>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-8">
+              Sign in to sync your study data across devices
+            </p>
+
+            {/* Google OAuth */}
             <button
               type="button"
-              onClick={() => { setMode('login'); resetForm(); }}
-              className="mb-6 flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+              onClick={handleOAuth}
+              disabled={loading || socialLoading}
+              className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-neutral-700 dark:text-neutral-200 font-medium text-sm hover:bg-neutral-50 dark:hover:bg-neutral-750 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed mb-6"
             >
-              <ArrowRight className="w-4 h-4 rotate-180" />
-              Back to Sign In
+              {socialLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <GoogleIcon />
+              )}
+              Continue with Google
             </button>
-          )}
 
-          {/* Social Login Buttons (only for login/signup) */}
-          {mode !== 'resend' && (
-            <div className="space-y-3 mb-6">
-              <button
-                type="button"
-                onClick={handleOAuth}
-                disabled={loading || socialLoading}
-                className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-200 font-medium text-sm hover:bg-slate-50 dark:hover:bg-slate-750 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-              >
-                {socialLoading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <GoogleIcon />
-                )}
-                Continue with Google
-              </button>
-
-              {/* Divider */}
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-slate-200 dark:border-slate-700" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-3 bg-white dark:bg-slate-900/80 text-slate-400 dark:text-slate-500">
-                    or continue with email
-                  </span>
-                </div>
+            {/* Divider */}
+            <div className="relative mb-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-neutral-200 dark:border-neutral-700" />
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="px-3 bg-stone-50 dark:bg-neutral-950 text-neutral-400 dark:text-neutral-500 uppercase tracking-wider font-medium">
+                  or
+                </span>
               </div>
             </div>
-          )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {mode === 'signup' && (
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                  Display Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                  <input
-                    type="text"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    placeholder="Your name"
-                    className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
-                  />
-                </div>
-              </div>
-            )}
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                Email
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  placeholder="Email address"
                   required
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-3 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-sm text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200"
                 />
               </div>
-            </div>
 
-            {mode !== 'resend' && (
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              {mode !== 'resend' && (
+                <div>
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
+                    placeholder="Password"
                     required
                     minLength={6}
-                    className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-4 py-3 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-sm text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200"
                   />
                 </div>
-              </div>
-            )}
-
-            {/* Error/Success Messages */}
-            {error && (
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-3 text-sm text-red-600 dark:text-red-400">
-                {error}
-              </div>
-            )}
-            {success && (
-              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-3 text-sm text-green-600 dark:text-green-400">
-                {success}
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading || (mode === 'resend' && resendCooldown > 0)}
-              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  {mode === 'login' ? 'Signing In...' : mode === 'signup' ? 'Creating Account...' : 'Sending...'}
-                </>
-              ) : mode === 'resend' && resendCooldown > 0 ? (
-                <>
-                  <RefreshCw className="w-5 h-5" />
-                  Resend in {resendCooldown}s
-                </>
-              ) : (
-                <>
-                  {mode === 'login' ? 'Sign In' : mode === 'signup' ? 'Create Account' : 'Send Confirmation Email'}
-                  <ArrowRight className="w-5 h-5" />
-                </>
               )}
-            </button>
-          </form>
 
-          {/* Footer */}
-          <div className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400 space-y-2">
-            {mode === 'login' && (
-              <>
+              {/* Error/Success */}
+              {error && (
+                <div className="text-sm text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-950/20 px-4 py-2.5 rounded-xl">
+                  {error}
+                </div>
+              )}
+              {success && (
+                <div className="text-sm text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20 px-4 py-2.5 rounded-xl">
+                  {success}
+                </div>
+              )}
+
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={loading || (mode === 'resend' && resendCooldown > 0)}
+                className="w-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-semibold py-3 px-6 rounded-xl hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>{mode === 'login' ? 'Signing in...' : mode === 'signup' ? 'Creating...' : 'Sending...'}</span>
+                  </>
+                ) : mode === 'resend' && resendCooldown > 0 ? (
+                  <span>Resend in {resendCooldown}s</span>
+                ) : (
+                  <>
+                    <span>{mode === 'login' ? 'Sign in' : mode === 'signup' ? 'Create account' : 'Send confirmation email'}</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Footer links */}
+            <div className="mt-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
+              {mode === 'login' && (
+                <div className="space-y-2">
+                  <p>
+                    <button
+                      onClick={() => { setMode('signup'); resetForm(); }}
+                      className="text-neutral-900 dark:text-white font-medium hover:underline underline-offset-4"
+                    >
+                      Create an account
+                    </button>
+                  </p>
+                  <p>
+                    <button
+                      onClick={() => { setMode('resend'); resetForm(); }}
+                      className="text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 text-xs"
+                    >
+                      Didn't receive confirmation email?
+                    </button>
+                  </p>
+                </div>
+              )}
+              {mode === 'signup' && (
                 <p>
-                  Don't have an account?{' '}
+                  Already have an account?{' '}
                   <button
-                    onClick={() => { setMode('signup'); resetForm(); }}
-                    className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline"
+                    onClick={() => { setMode('login'); resetForm(); }}
+                    className="text-neutral-900 dark:text-white font-medium hover:underline underline-offset-4"
                   >
-                    Sign up
+                    Sign in
                   </button>
                 </p>
-                <p>
-                  <button
-                    onClick={() => { setMode('resend'); resetForm(); }}
-                    className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline"
-                  >
-                    Didn't receive confirmation email?
-                  </button>
-                </p>
-              </>
-            )}
-            {mode === 'signup' && (
-              <p>
-                Already have an account?{' '}
+              )}
+              {mode === 'resend' && (
                 <button
                   onClick={() => { setMode('login'); resetForm(); }}
-                  className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline"
+                  className="text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 text-xs"
                 >
-                  Sign in
+                  Back to sign in
                 </button>
-              </p>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
