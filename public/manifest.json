@@ -1,0 +1,20 @@
+{
+  "name": "Study Tracker",
+  "short_name": "StudyTracker",
+  "description": "A gamified study tracker with focus timer, task management, analytics, and habit tracking.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafaf9",
+  "theme_color": "#0ea5e9",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "lang": "en"
+}
