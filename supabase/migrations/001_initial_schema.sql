@@ -255,16 +255,24 @@ CREATE TRIGGER update_notes_updated_at BEFORE UPDATE ON notes
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Function to create initial user stats when a user signs up
+-- NOTE: This trigger depends on user_stats table existing.
+-- The tables above MUST be created before this trigger.
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO user_stats (user_id, xp, level, streak, best_streak)
-  VALUES (NEW.id, 0, 1, 0, 0);
+  -- Only insert if user_stats table exists and no row exists yet
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'user_stats') THEN
+    INSERT INTO user_stats (user_id, xp, level, streak, best_streak)
+    VALUES (NEW.id, 0, 1, 0, 0)
+    ON CONFLICT DO NOTHING;
+  END IF;
   RETURN NEW;
 END;
 $$ language 'plpgsql' SECURITY DEFINER;
 
 -- Trigger to create user stats on signup
+-- Drop first to allow re-running this migration safely
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
