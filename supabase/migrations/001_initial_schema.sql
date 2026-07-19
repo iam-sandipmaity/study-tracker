@@ -1,5 +1,6 @@
 -- Study Tracker Database Schema
 -- Run this in your Supabase SQL Editor to set up the database
+-- Safe to re-run: uses IF NOT EXISTS / IF EXISTS throughout
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -135,100 +136,130 @@ ALTER TABLE notes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 
 -- Subjects policies
+DROP POLICY IF EXISTS "Users can view their own subjects" ON subjects;
 CREATE POLICY "Users can view their own subjects" ON subjects
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own subjects" ON subjects;
 CREATE POLICY "Users can insert their own subjects" ON subjects
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own subjects" ON subjects;
 CREATE POLICY "Users can update their own subjects" ON subjects
   FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own subjects" ON subjects;
 CREATE POLICY "Users can delete their own subjects" ON subjects
   FOR DELETE USING (auth.uid() = user_id);
 
 -- Tasks policies
+DROP POLICY IF EXISTS "Users can view their own tasks" ON tasks;
 CREATE POLICY "Users can view their own tasks" ON tasks
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own tasks" ON tasks;
 CREATE POLICY "Users can insert their own tasks" ON tasks
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own tasks" ON tasks;
 CREATE POLICY "Users can update their own tasks" ON tasks
   FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own tasks" ON tasks;
 CREATE POLICY "Users can delete their own tasks" ON tasks
   FOR DELETE USING (auth.uid() = user_id);
 
 -- Sessions policies
+DROP POLICY IF EXISTS "Users can view their own sessions" ON sessions;
 CREATE POLICY "Users can view their own sessions" ON sessions
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own sessions" ON sessions;
 CREATE POLICY "Users can insert their own sessions" ON sessions
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own sessions" ON sessions;
 CREATE POLICY "Users can update their own sessions" ON sessions
   FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own sessions" ON sessions;
 CREATE POLICY "Users can delete their own sessions" ON sessions
   FOR DELETE USING (auth.uid() = user_id);
 
 -- Habits policies
+DROP POLICY IF EXISTS "Users can view their own habits" ON habits;
 CREATE POLICY "Users can view their own habits" ON habits
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own habits" ON habits;
 CREATE POLICY "Users can insert their own habits" ON habits
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own habits" ON habits;
 CREATE POLICY "Users can update their own habits" ON habits
   FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own habits" ON habits;
 CREATE POLICY "Users can delete their own habits" ON habits
   FOR DELETE USING (auth.uid() = user_id);
 
 -- User stats policies
+DROP POLICY IF EXISTS "Users can view their own stats" ON user_stats;
 CREATE POLICY "Users can view their own stats" ON user_stats
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own stats" ON user_stats;
 CREATE POLICY "Users can insert their own stats" ON user_stats
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own stats" ON user_stats;
 CREATE POLICY "Users can update their own stats" ON user_stats
   FOR UPDATE USING (auth.uid() = user_id);
 
 -- Achievements policies
+DROP POLICY IF EXISTS "Users can view their own achievements" ON achievements;
 CREATE POLICY "Users can view their own achievements" ON achievements
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own achievements" ON achievements;
 CREATE POLICY "Users can insert their own achievements" ON achievements
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own achievements" ON achievements;
 CREATE POLICY "Users can update their own achievements" ON achievements
   FOR UPDATE USING (auth.uid() = user_id);
 
 -- Notes policies
+DROP POLICY IF EXISTS "Users can view their own notes" ON notes;
 CREATE POLICY "Users can view their own notes" ON notes
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own notes" ON notes;
 CREATE POLICY "Users can insert their own notes" ON notes
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own notes" ON notes;
 CREATE POLICY "Users can update their own notes" ON notes
   FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own notes" ON notes;
 CREATE POLICY "Users can delete their own notes" ON notes
   FOR DELETE USING (auth.uid() = user_id);
 
 -- Notifications policies
+DROP POLICY IF EXISTS "Users can view their own notifications" ON notifications;
 CREATE POLICY "Users can view their own notifications" ON notifications
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own notifications" ON notifications;
 CREATE POLICY "Users can insert their own notifications" ON notifications
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own notifications" ON notifications;
 CREATE POLICY "Users can update their own notifications" ON notifications
   FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own notifications" ON notifications;
 CREATE POLICY "Users can delete their own notifications" ON notifications
   FOR DELETE USING (auth.uid() = user_id);
 
