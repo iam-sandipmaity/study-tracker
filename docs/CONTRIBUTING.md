@@ -2,6 +2,10 @@
 
 Guidelines for contributing to Study Tracker.
 
+## License
+
+This project is released into the public domain under the [Unlicense](../LICENSE). By contributing, you agree that your contributions will be released under the same license.
+
 ## Development
 
 ```bash
@@ -11,12 +15,24 @@ npm run dev
 
 The dev server runs at `http://localhost:5173` with hot module replacement.
 
+### Environment Variables
+
+For Supabase features, create a `.env` file:
+
+```bash
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
+
+Without these, the app runs in demo mode with localStorage.
+
 ## Code Style
 
 - TypeScript strict mode is enabled — no `any` types in new code
 - Tailwind utility classes for all styling — no CSS modules or inline styles
 - Components are functional with hooks — no class components
 - State management through `AppContext` — avoid prop drilling more than 2 levels
+- Auth state lives in `AuthContext` — use `useAuth()` hook for auth methods
 
 ## Linting
 
@@ -48,6 +64,15 @@ All shared state lives in `src/context/AppContext.tsx`. To add new state:
 
 1. Define the type in `src/types.ts`
 2. Add `useState` with localStorage initialization in `AppProvider`
-3. Add a `useEffect` to sync to localStorage
+3. Add a `useEffect` to sync to localStorage and Supabase (if authenticated)
 4. Expose the state and setter through the context value
 5. Update the `AppContextType` interface
+
+## Database Changes
+
+When modifying the database schema:
+
+1. Create a new migration file in `supabase/migrations/`
+2. Use `DROP ... IF EXISTS` before `CREATE` statements for idempotency
+3. Include RLS policies for new tables
+4. Update `src/types/database.ts` if needed
