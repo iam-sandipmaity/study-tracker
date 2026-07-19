@@ -80,4 +80,4 @@ public/
 
 ## License
 
-MIT
+[Unlicense](LICENSE) — Public Domain. Free to use, modify, and distribute.
