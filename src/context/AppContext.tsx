@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import type { Subject, Task, Session, HabitTrack, UserStats, Achievement, Note, NotificationItem } from '../types';
 import {
   initialSubjects,
@@ -14,6 +14,8 @@ import {
 import { ambientSound, playCompletionChime } from '../audioSynthesis';
 import type { AmbientType } from '../audioSynthesis';
 import { triggerConfetti } from '../utils/confetti';
+import { isSupabaseConfigured, supabase } from '../lib/supabase';
+import { useAuth } from './AuthContext';
 
 interface AppContextType {
   subjects: Subject[];
@@ -74,46 +76,61 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Get auth user for Supabase sync
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
+  const isConfigured = isSupabaseConfigured();
+
+  // Helper: get localStorage value with fallback
+  const getLocalStorage = <T,>(key: string, fallback: T): T => {
+    try {
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        const parsed = JSON.parse(saved) as unknown;
+        // Handle both array and object types
+        if (Array.isArray(fallback)) {
+          return (Array.isArray(parsed) ? parsed : fallback) as T;
+        }
+        return (typeof parsed === 'object' && parsed !== null ? parsed : fallback) as T;
+      }
+    } catch {
+      // Ignore parse errors
+    }
+    return fallback;
+  };
+
   // Load initial states from LocalStorage or use Mock Data
-  const [subjects, setSubjects] = useState<Subject[]>(() => {
-    const saved = localStorage.getItem('study_subjects');
-    return saved ? JSON.parse(saved) : initialSubjects;
-  });
+  const [subjects, setSubjects] = useState<Subject[]>(() => 
+    getLocalStorage('study_subjects', initialSubjects)
+  );
   
-  const [tasks, setTasks] = useState<Task[]>(() => {
-    const saved = localStorage.getItem('study_tasks');
-    return saved ? JSON.parse(saved) : initialTasks;
-  });
+  const [tasks, setTasks] = useState<Task[]>(() => 
+    getLocalStorage('study_tasks', initialTasks)
+  );
   
-  const [sessions, setSessions] = useState<Session[]>(() => {
-    const saved = localStorage.getItem('study_sessions');
-    return saved ? JSON.parse(saved) : initialSessions;
-  });
+  const [sessions, setSessions] = useState<Session[]>(() => 
+    getLocalStorage('study_sessions', initialSessions)
+  );
   
-  const [habits, setHabits] = useState<HabitTrack[]>(() => {
-    const saved = localStorage.getItem('study_habits');
-    return saved ? JSON.parse(saved) : initialHabits;
-  });
+  const [habits, setHabits] = useState<HabitTrack[]>(() => 
+    getLocalStorage('study_habits', initialHabits)
+  );
   
-  const [stats, setStats] = useState<UserStats>(() => {
-    const saved = localStorage.getItem('study_stats');
-    return saved ? JSON.parse(saved) : initialStats;
-  });
+  const [stats, setStats] = useState<UserStats>(() => 
+    getLocalStorage('study_stats', initialStats)
+  );
   
-  const [achievements, setAchievements] = useState<Achievement[]>(() => {
-    const saved = localStorage.getItem('study_achievements');
-    return saved ? JSON.parse(saved) : initialAchievements;
-  });
+  const [achievements, setAchievements] = useState<Achievement[]>(() => 
+    getLocalStorage('study_achievements', initialAchievements)
+  );
   
-  const [notes, setNotes] = useState<Note[]>(() => {
-    const saved = localStorage.getItem('study_notes');
-    return saved ? JSON.parse(saved) : initialNotes;
-  });
+  const [notes, setNotes] = useState<Note[]>(() => 
+    getLocalStorage('study_notes', initialNotes)
+  );
   
-  const [notifications, setNotifications] = useState<NotificationItem[]>(() => {
-    const saved = localStorage.getItem('study_notifications');
-    return saved ? JSON.parse(saved) : initialNotifications;
-  });
+  const [notifications, setNotifications] = useState<NotificationItem[]>(() => 
+    getLocalStorage('study_notifications', initialNotifications)
+  );
 
   // UI state
   const [theme, setThemeState] = useState<'light' | 'dark'>(() => {
@@ -149,6 +166,165 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => { tasksRef.current = tasks; }, [tasks]);
   useEffect(() => { notesRef.current = notes; }, [notes]);
   useEffect(() => { statsRef.current = stats; }, [stats]);
+
+  // Load data from Supabase when user is authenticated
+  useEffect(() => {
+    if (!isConfigured || !userId) return;
+
+    const loadFromSupabase = async () => {
+      try {
+        // Load subjects
+        const { data: subjectsData } = await supabase
+          .from('subjects')
+          .select('*')
+          .eq('user_id', userId);
+        
+        if (subjectsData && subjectsData.length > 0) {
+          setSubjects(subjectsData.map(s => ({
+            id: s.id,
+            name: s.name,
+            color: s.color,
+            icon: s.icon,
+            targetScore: s.target_score,
+            examDate: s.exam_date,
+            totalHours: s.total_hours,
+          })));
+        }
+
+        // Load tasks
+        const { data: tasksData } = await supabase
+          .from('tasks')
+          .select('*')
+          .eq('user_id', userId);
+        
+        if (tasksData && tasksData.length > 0) {
+          setTasks(tasksData.map(t => ({
+            id: t.id,
+            title: t.title,
+            status: t.status,
+            priority: t.priority,
+            dueDate: t.due_date,
+            subjectId: t.subject_id,
+            estimatedDuration: t.estimated_duration,
+            actualDuration: t.actual_duration,
+            completedAt: t.completed_at,
+          })));
+        }
+
+        // Load sessions
+        const { data: sessionsData } = await supabase
+          .from('sessions')
+          .select('*')
+          .eq('user_id', userId);
+        
+        if (sessionsData && sessionsData.length > 0) {
+          setSessions(sessionsData.map(s => ({
+            id: s.id,
+            duration: s.duration,
+            date: s.date,
+            type: s.type,
+            notes: s.notes,
+            subjectId: s.subject_id,
+            xpEarned: s.xp_earned,
+          })));
+        }
+
+        // Load habits
+        const { data: habitsData } = await supabase
+          .from('habits')
+          .select('*')
+          .eq('user_id', userId);
+        
+        if (habitsData && habitsData.length > 0) {
+          setHabits(habitsData.map(h => ({
+            date: h.date,
+            study: h.study,
+            revision: h.revision,
+            practice: h.practice,
+            reading: h.reading,
+            exercise: h.exercise,
+            sleep: h.sleep,
+          })));
+        }
+
+        // Load stats
+        const { data: statsData } = await supabase
+          .from('user_stats')
+          .select('*')
+          .eq('user_id', userId)
+          .single();
+        
+        if (statsData) {
+          setStats({
+            xp: statsData.xp,
+            level: statsData.level,
+            streak: statsData.streak,
+            bestStreak: statsData.best_streak,
+            lastStudyDate: statsData.last_study_date,
+          });
+        }
+
+        // Load notes
+        const { data: notesData } = await supabase
+          .from('notes')
+          .select('*')
+          .eq('user_id', userId);
+        
+        if (notesData && notesData.length > 0) {
+          setNotes(notesData.map(n => ({
+            id: n.id,
+            title: n.title,
+            content: n.content,
+            subjectId: n.subject_id,
+            createdAt: n.created_at,
+            updatedAt: n.updated_at,
+          })));
+        }
+
+        // Load achievements
+        const { data: achievementsData } = await supabase
+          .from('achievements')
+          .select('*')
+          .eq('user_id', userId);
+        
+        if (achievementsData && achievementsData.length > 0) {
+          setAchievements(prev => prev.map(a => {
+            const cloudAch = achievementsData.find(ca => ca.achievement_id === a.id);
+            if (cloudAch && cloudAch.unlocked_at) {
+              return { ...a, unlockedAt: cloudAch.unlocked_at };
+            }
+            return a;
+          }));
+        }
+
+        console.log('Loaded data from Supabase');
+      } catch (error) {
+        console.error('Error loading from Supabase:', error);
+      }
+    };
+
+    loadFromSupabase();
+  }, [userId, isConfigured]);
+
+  // Sync to Supabase helper
+  const syncToSupabase = useCallback(async (table: string, data: Record<string, unknown>[], operation: 'upsert' | 'delete' = 'upsert') => {
+    if (!isConfigured || !userId) return;
+
+    try {
+      if (operation === 'delete') {
+        // For deletes, data should contain the id
+        if (data.length > 0 && data[0].id) {
+          await supabase.from(table).delete().eq('id', data[0].id as string).eq('user_id', userId);
+        }
+      } else {
+        // Add user_id to all records
+        const dataWithUserId = data.map(item => ({ ...item, user_id: userId }));
+        await supabase.from(table).upsert(dataWithUserId as never);
+      }
+    } catch (error) {
+      console.error(`Error syncing ${table} to Supabase:`, error);
+    }
+  }, [userId, isConfigured]);
 
   // Sync state to local storage when state changes
   useEffect(() => {
@@ -353,13 +529,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           triggerConfetti();
         }, 100);
       }
-      
-      return {
+
+      const newStats = {
         ...prev,
         xp: newXp,
         level: newLevel,
         lastStudyDate: new Date().toISOString().split('T')[0]
       };
+
+      // Sync stats to Supabase
+      if (isConfigured && userId) {
+        syncToSupabase('user_stats', [{
+          xp: newXp,
+          level: newLevel,
+          last_study_date: newStats.lastStudyDate,
+        }]);
+      }
+      
+      return newStats;
     });
 
     // Check achievement rules after XP update
@@ -410,6 +597,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
         if (unlock) {
           updated = true;
+          const unlockedAt = new Date().toISOString();
+          
+          // Sync achievement to Supabase
+          if (isConfigured && userId) {
+            syncToSupabase('achievements', [{
+              achievement_id: ach.id,
+              unlocked_at: unlockedAt,
+            }]);
+          }
+
           // Notify unlock
           setTimeout(() => {
             addNotification(
@@ -420,7 +617,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             playCompletionChime();
             triggerConfetti();
           }, 100);
-          return { ...ach, unlockedAt: new Date().toISOString() };
+          return { ...ach, unlockedAt };
         }
         return ach;
       });
@@ -441,10 +638,35 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
     setSubjects(prev => [...prev, newSubject]);
     addNotification('New Subject Added', `You started tracking "${name}"`, 'info');
+
+    // Sync to Supabase
+    if (isConfigured && userId) {
+      syncToSupabase('subjects', [{
+        id: newSubject.id,
+        name,
+        color,
+        icon,
+        target_score: targetScore,
+        exam_date: examDate,
+        total_hours: 0,
+      }]);
+    }
   };
 
   const updateSubject = (id: string, data: Partial<Subject>) => {
     setSubjects(prev => prev.map(s => s.id === id ? { ...s, ...data } : s));
+
+    // Sync to Supabase
+    if (isConfigured && userId) {
+      const dbData: Record<string, unknown> = { id };
+      if (data.name !== undefined) dbData.name = data.name;
+      if (data.color !== undefined) dbData.color = data.color;
+      if (data.icon !== undefined) dbData.icon = data.icon;
+      if (data.targetScore !== undefined) dbData.target_score = data.targetScore;
+      if (data.examDate !== undefined) dbData.exam_date = data.examDate;
+      if (data.totalHours !== undefined) dbData.total_hours = data.totalHours;
+      syncToSupabase('subjects', [dbData]);
+    }
   };
 
   const deleteSubject = (id: string) => {
@@ -453,6 +675,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setTasks(prev => prev.filter(t => t.subjectId !== id));
     setNotes(prev => prev.filter(n => n.subjectId !== id));
     addNotification('Subject Deleted', 'Related tasks and notes were also removed.', 'warning');
+
+    // Sync to Supabase
+    if (isConfigured && userId) {
+      syncToSupabase('subjects', [{ id }], 'delete');
+      // Also delete related tasks and notes
+      syncToSupabase('tasks', [{ subject_id: id }], 'delete');
+      syncToSupabase('notes', [{ subject_id: id }], 'delete');
+    }
   };
 
   // TASK HANDLERS
@@ -469,24 +699,58 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
     setTasks(prev => [newTask, ...prev]);
     addNotification('Task Added', `"${title}" has been added to your backlog.`, 'info');
+
+    // Sync to Supabase
+    if (isConfigured && userId) {
+      syncToSupabase('tasks', [{
+        id: newTask.id,
+        title,
+        status: 'todo',
+        priority,
+        due_date: dueDate,
+        subject_id: subjectId,
+        estimated_duration: estimatedDuration,
+        actual_duration: 0,
+      }]);
+    }
   };
 
   const updateTask = (id: string, data: Partial<Task>) => {
     setTasks(prev => prev.map(t => t.id === id ? { ...t, ...data } : t));
+
+    // Sync to Supabase
+    if (isConfigured && userId) {
+      const dbData: Record<string, unknown> = { id };
+      if (data.title !== undefined) dbData.title = data.title;
+      if (data.status !== undefined) dbData.status = data.status;
+      if (data.priority !== undefined) dbData.priority = data.priority;
+      if (data.dueDate !== undefined) dbData.due_date = data.dueDate;
+      if (data.subjectId !== undefined) dbData.subject_id = data.subjectId;
+      if (data.estimatedDuration !== undefined) dbData.estimated_duration = data.estimatedDuration;
+      if (data.actualDuration !== undefined) dbData.actual_duration = data.actualDuration;
+      if (data.completedAt !== undefined) dbData.completed_at = data.completedAt;
+      syncToSupabase('tasks', [dbData]);
+    }
   };
 
   const deleteTask = (id: string) => {
     setTasks(prev => prev.filter(t => t.id !== id));
+
+    // Sync to Supabase
+    if (isConfigured && userId) {
+      syncToSupabase('tasks', [{ id }], 'delete');
+    }
   };
 
   const completeTask = (id: string) => {
     const task = tasks.find(t => t.id === id);
     if (!task || task.status === 'completed') return;
     
+    const completedAt = new Date().toISOString();
     setTasks(prev => prev.map(t => t.id === id ? { 
       ...t, 
       status: 'completed',
-      completedAt: new Date().toISOString()
+      completedAt
     } : t));
     
     // Complete trigger
@@ -494,6 +758,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     triggerConfetti();
     gainXP(50, 'task_completed');
     addNotification('Task Completed! 🎉', `Completed: "${task.title}". +50 XP`, 'success');
+
+    // Sync to Supabase
+    if (isConfigured && userId) {
+      syncToSupabase('tasks', [{
+        id,
+        status: 'completed',
+        completed_at: completedAt,
+      }]);
+    }
   };
 
   // STUDY SESSION LOGGERS
@@ -510,28 +783,71 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     setSessions(prev => [newSession, ...prev]);
 
+    // Sync to Supabase
+    if (isConfigured && userId) {
+      syncToSupabase('sessions', [{
+        id: newSession.id,
+        duration: durationSeconds,
+        date: newSession.date,
+        type,
+        notes: notesText,
+        subject_id: subjectId || null,
+        xp_earned: newSession.xpEarned,
+      }]);
+    }
+
     if (type === 'focus') {
       const minutes = Math.round(durationSeconds / 60);
       const xp = minutes * 10;
       
       // Update subject hours
       if (subjectId) {
-        setSubjects(prevSubjs => prevSubjs.map(subj => {
-          if (subj.id === subjectId) {
-            return { ...subj, totalHours: Number((subj.totalHours + (durationSeconds / 3600)).toFixed(1)) };
+        setSubjects(prevSubjs => {
+          const updated = prevSubjs.map(subj => {
+            if (subj.id === subjectId) {
+              return { ...subj, totalHours: Number((subj.totalHours + (durationSeconds / 3600)).toFixed(1)) };
+            }
+            return subj;
+          });
+
+          // Sync subject update to Supabase
+          if (isConfigured && userId) {
+            const subj = updated.find(s => s.id === subjectId);
+            if (subj) {
+              syncToSupabase('subjects', [{
+                id: subjectId,
+                total_hours: subj.totalHours,
+              }]);
+            }
           }
-          return subj;
-        }));
+
+          return updated;
+        });
       }
 
       // If active session was linked to a task, update its actual study duration
       if (activeSessionTask) {
-        setTasks(prev => prev.map(t => {
-          if (t.id === activeSessionTask.id) {
-            return { ...t, actualDuration: t.actualDuration + minutes };
+        setTasks(prev => {
+          const updated = prev.map(t => {
+            if (t.id === activeSessionTask.id) {
+              return { ...t, actualDuration: t.actualDuration + minutes };
+            }
+            return t;
+          });
+
+          // Sync task update to Supabase
+          if (isConfigured && userId) {
+            const task = updated.find(t => t.id === activeSessionTask.id);
+            if (task) {
+              syncToSupabase('tasks', [{
+                id: task.id,
+                actual_duration: task.actualDuration,
+              }]);
+            }
           }
-          return t;
-        }));
+
+          return updated;
+        });
         setActiveSessionTask(null);
       }
 
@@ -543,11 +859,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setTimeout(() => {
         setStats(prevStats => {
           const { currentStreak, bestStreak } = recalculateStreak([...sessions, newSession], habits, prevStats.bestStreak);
-          return {
+          const newStats = {
             ...prevStats,
             streak: currentStreak,
             bestStreak
           };
+
+          // Sync stats to Supabase
+          if (isConfigured && userId) {
+            syncToSupabase('user_stats', [{
+              streak: currentStreak,
+              best_streak: bestStreak,
+            }]);
+          }
+
+          return newStats;
         });
       }, 300);
     }
@@ -569,6 +895,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           ...prev[dayIndex],
           [key]: nextVal
         };
+
+        // Sync to Supabase
+        if (isConfigured && userId) {
+          syncToSupabase('habits', [{
+            id: prev[dayIndex].date, // Using date as identifier for habits
+            date,
+            [key]: nextVal,
+          }]);
+        }
       } else {
         // Create new record for this date
         const newTrack: HabitTrack = {
@@ -583,6 +918,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         };
         checked = true;
         updatedHabits = [newTrack, ...updatedHabits];
+
+        // Sync to Supabase
+        if (isConfigured && userId) {
+          syncToSupabase('habits', [{
+            date,
+            study: key === 'study' ? true : false,
+            revision: key === 'revision' ? true : false,
+            practice: key === 'practice' ? true : false,
+            reading: key === 'reading' ? true : false,
+            exercise: key === 'exercise' ? true : false,
+            sleep: key === 'sleep' ? true : false,
+          }]);
+        }
       }
 
       // If they check it and it's study, recalculate streak
@@ -590,11 +938,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setTimeout(() => {
           setStats(p => {
             const { currentStreak, bestStreak } = recalculateStreak(sessions, updatedHabits, p.bestStreak);
-            return {
+            const newStats = {
               ...p,
               streak: currentStreak,
               bestStreak
             };
+
+            // Sync stats to Supabase
+            if (isConfigured && userId) {
+              syncToSupabase('user_stats', [{
+                streak: currentStreak,
+                best_streak: bestStreak,
+              }]);
+            }
+
+            return newStats;
           });
         }, 100);
       }
@@ -632,6 +990,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setNotes(prev => [newNote, ...prev]);
     gainXP(30, 'note_created');
     addNotification('Note Created', `Saved "${title}". +30 XP`, 'success');
+
+    // Sync to Supabase
+    if (isConfigured && userId) {
+      syncToSupabase('notes', [{
+        id: newNote.id,
+        title,
+        content,
+        subject_id: subjectId,
+      }]);
+    }
   };
 
   const updateNote = (id: string, data: Partial<Note>) => {
@@ -640,10 +1008,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       ...data, 
       updatedAt: new Date().toISOString() 
     } : n));
+
+    // Sync to Supabase
+    if (isConfigured && userId) {
+      const dbData: Record<string, unknown> = { id };
+      if (data.title !== undefined) dbData.title = data.title;
+      if (data.content !== undefined) dbData.content = data.content;
+      if (data.subjectId !== undefined) dbData.subject_id = data.subjectId;
+      syncToSupabase('notes', [dbData]);
+    }
   };
 
   const deleteNote = (id: string) => {
     setNotes(prev => prev.filter(n => n.id !== id));
+
+    // Sync to Supabase
+    if (isConfigured && userId) {
+      syncToSupabase('notes', [{ id }], 'delete');
+    }
   };
 
   // NOTIFICATION HANDLERS

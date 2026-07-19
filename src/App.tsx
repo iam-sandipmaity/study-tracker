@@ -1,5 +1,7 @@
 import React from 'react';
 import { AppProvider, useApp } from './context/AppContext';
+import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import { CommandPalette } from './components/CommandPalette';
 import { NotificationCenter } from './components/NotificationCenter';
 import { LucideIcon } from './components/LucideIcon';
@@ -232,9 +234,13 @@ const AppContent: React.FC = () => {
 
 function App() {
   return (
-    <AppProvider>
-      <AppContent />
-    </AppProvider>
+    <AuthProvider>
+      <ProtectedRoute>
+        <AppProvider>
+          <AppContent />
+        </AppProvider>
+      </ProtectedRoute>
+    </AuthProvider>
   );
 }
 

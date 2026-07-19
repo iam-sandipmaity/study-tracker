@@ -2,14 +2,16 @@
 
 Planned features and improvements for Study Tracker.
 
-## Phase 1 — Auth & Multi-User (Next)
+## Phase 1 — Auth & Multi-User
 
-- [ ] Integrate authentication service (Firebase Auth, Supabase, or Clerk)
-- [ ] User registration, login, and logout flows
-- [ ] Move data from localStorage to cloud database (Firestore / Supabase)
-- [ ] Per-user data isolation and syncing
-- [ ] Profile page with avatar and display name
-- [ ] Session persistence across devices
+- [x] Integrate Supabase authentication (auth + PostgreSQL DB)
+- [x] User registration, login, and logout flows
+- [x] Database schema with RLS policies for per-user data isolation
+- [x] Data migration utility (localStorage → Supabase)
+- [x] Real-time data sync to Supabase on all CRUD operations
+- [ ] User profile page with avatar and display name
+- [ ] Session persistence across devices (testing needed)
+- [ ] Manual migration trigger UI for existing users
 
 ## Phase 2 — Enhanced Study Tools
 
