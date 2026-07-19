@@ -16,6 +16,7 @@ import { Calendar } from './components/Calendar';
 import { Habits } from './components/Habits';
 import { Notes } from './components/Notes';
 import { Achievements } from './components/Achievements';
+import { SessionHistory } from './components/SessionHistory';
 
 const AppContent: React.FC = () => {
   const {
@@ -55,7 +56,8 @@ const AppContent: React.FC = () => {
     { id: 'calendar', name: 'Calendar', icon: 'Calendar' },
     { id: 'habits', name: 'Habit Tracker', icon: 'Heart' },
     { id: 'notes', name: 'Study Notes', icon: 'PenTool' },
-    { id: 'achievements', name: 'Achievements', icon: 'Award' }
+    { id: 'achievements', name: 'Achievements', icon: 'Award' },
+    { id: 'history', name: 'Session History', icon: 'Clock' }
   ];
 
   // Render active tab content
@@ -69,6 +71,7 @@ const AppContent: React.FC = () => {
       case 'habits': return <Habits />;
       case 'notes': return <Notes />;
       case 'achievements': return <Achievements />;
+      case 'history': return <SessionHistory />;
       default: return <Dashboard />;
     }
   };
