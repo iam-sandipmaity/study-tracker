@@ -14,6 +14,7 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
   updateProfile: (updates: { display_name?: string; avatar_url?: string }) => Promise<{ error: AuthError | null }>;
+  resendConfirmation: (email: string) => Promise<{ error: AuthError | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -105,6 +106,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error };
   }, [isConfigured, user]);
 
+  const resendConfirmation = useCallback(async (email: string) => {
+    if (!isConfigured) {
+      return { error: { message: 'Supabase is not configured' } as AuthError };
+    }
+
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+    });
+
+    return { error };
+  }, [isConfigured]);
+
   const value = {
     user,
     session,
@@ -115,6 +129,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signOut,
     resetPassword,
     updateProfile,
+    resendConfirmation,
   };
 
   return (
