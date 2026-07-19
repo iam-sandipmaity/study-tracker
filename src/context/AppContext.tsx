@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import type { Subject, Task, Session, HabitTrack, UserStats, Achievement, Note, NotificationItem } from '../types';
 import {
   initialSubjects,
@@ -123,8 +123,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   });
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [focusMode, setFocusMode] = useState<boolean>(false);
-  const [soundType, setSoundTypeState] = useState<AmbientType>('none');
-  const [soundVolume, setSoundVolumeState] = useState<number>(0.4);
+  const [soundType, setSoundTypeState] = useState<AmbientType>(() => {
+    const saved = localStorage.getItem('study_soundType');
+    if (saved === 'none' || saved === 'white' || saved === 'rain' || saved === 'ocean' || saved === 'focus') return saved;
+    return 'none';
+  });
+  const [soundVolume, setSoundVolumeState] = useState<number>(() => {
+    const saved = localStorage.getItem('study_soundVolume');
+    return saved !== null ? parseFloat(saved) : 0.4;
+  });
   const [commandPaletteOpen, setCommandPaletteOpen] = useState<boolean>(false);
   const [activeSessionTask, setActiveSessionTask] = useState<Task | null>(null);
   
@@ -132,6 +139,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const idx = Math.floor(Math.random() * quotes.length);
     return quotes[idx];
   });
+
+  // Refs for latest state to avoid stale closures in checkAchievements
+  const sessionsRef = useRef(sessions);
+  const tasksRef = useRef(tasks);
+  const notesRef = useRef(notes);
+  const statsRef = useRef(stats);
+  useEffect(() => { sessionsRef.current = sessions; }, [sessions]);
+  useEffect(() => { tasksRef.current = tasks; }, [tasks]);
+  useEffect(() => { notesRef.current = notes; }, [notes]);
+  useEffect(() => { statsRef.current = stats; }, [stats]);
 
   // Sync state to local storage when state changes
   useEffect(() => {
@@ -165,6 +182,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     localStorage.setItem('study_notifications', JSON.stringify(notifications));
   }, [notifications]);
+
+  // Persist sound settings
+  useEffect(() => {
+    localStorage.setItem('study_soundType', soundType);
+  }, [soundType]);
+
+  useEffect(() => {
+    localStorage.setItem('study_soundVolume', String(soundVolume));
+  }, [soundVolume]);
 
   // Set document class for dark mode
   useEffect(() => {
@@ -224,7 +250,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, []);
 
   // Recalculate Streak whenever sessions or habits change
-  const recalculateStreak = (allSessions: Session[], allHabits: HabitTrack[]) => {
+  const recalculateStreak = (allSessions: Session[], allHabits: HabitTrack[], currentBestStreak: number) => {
     const yesterdayStr = new Date(Date.now() - 86400000).toISOString().split('T')[0];
     
     // Create a Set of all days that have studies
@@ -277,9 +303,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
 
     // Now find Best Streak across all time
-    // Sort dates ascending
     const sortedDatesAsc = Array.from(activeDays).sort((a, b) => a.localeCompare(b));
-    let bestStreak = stats.bestStreak;
+    let bestStreak = currentBestStreak;
     let runStreak = 0;
     let prevTime: number | null = null;
 
@@ -342,7 +367,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const checkAchievements = () => {
-    // Read stats from local storage state
+    // Use refs to get latest state (avoid stale closures from setTimeout)
+    const currentSessions = sessionsRef.current;
+    const currentTasks = tasksRef.current;
+    const currentNotes = notesRef.current;
+    const currentStats = statsRef.current;
+
     setAchievements(prev => {
       let updated = false;
       const next = prev.map(ach => {
@@ -352,27 +382,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         
         switch (ach.id) {
           case 'ach-first-step':
-            unlock = sessions.length > 0;
+            unlock = currentSessions.length > 0;
             break;
           case 'ach-deep-focus':
-            unlock = sessions.some(s => s.type === 'focus' && s.duration >= 2700);
+            unlock = currentSessions.some(s => s.type === 'focus' && s.duration >= 2700);
             break;
           case 'ach-streak-5':
-            unlock = stats.streak >= 5;
+            unlock = currentStats.streak >= 5;
             break;
           case 'ach-xp-1000':
-            unlock = stats.xp >= 1000;
+            unlock = currentStats.xp >= 1000;
             break;
           case 'ach-hours-10':
-            const totalSecs = sessions.reduce((acc, s) => acc + (s.type === 'focus' ? s.duration : 0), 0);
+            const totalSecs = currentSessions.reduce((acc, s) => acc + (s.type === 'focus' ? s.duration : 0), 0);
             unlock = (totalSecs / 3600) >= 10;
             break;
           case 'ach-tasks-10':
-            const completedCount = tasks.filter(t => t.status === 'completed').length;
+            const completedCount = currentTasks.filter(t => t.status === 'completed').length;
             unlock = completedCount >= 10;
             break;
           case 'ach-notes-3':
-            unlock = notes.length >= 3;
+            unlock = currentNotes.length >= 3;
             break;
           default:
             break;
@@ -511,12 +541,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       
       // Recalculate streak
       setTimeout(() => {
-        const { currentStreak, bestStreak } = recalculateStreak([...sessions, newSession], habits);
-        setStats(prev => ({
-          ...prev,
-          streak: currentStreak,
-          bestStreak
-        }));
+        setStats(prevStats => {
+          const { currentStreak, bestStreak } = recalculateStreak([...sessions, newSession], habits, prevStats.bestStreak);
+          return {
+            ...prevStats,
+            streak: currentStreak,
+            bestStreak
+          };
+        });
       }, 300);
     }
   };
@@ -556,12 +588,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       // If they check it and it's study, recalculate streak
       if (key === 'study') {
         setTimeout(() => {
-          const { currentStreak, bestStreak } = recalculateStreak(sessions, updatedHabits);
-          setStats(p => ({
-            ...p,
-            streak: currentStreak,
-            bestStreak
-          }));
+          setStats(p => {
+            const { currentStreak, bestStreak } = recalculateStreak(sessions, updatedHabits, p.bestStreak);
+            return {
+              ...p,
+              streak: currentStreak,
+              bestStreak
+            };
+          });
         }, 100);
       }
 

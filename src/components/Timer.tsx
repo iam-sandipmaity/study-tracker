@@ -42,6 +42,15 @@ export const Timer: React.FC = () => {
 
   const timerRef = useRef<any>(null);
 
+  // Use refs to avoid stale closures in the interval callback
+  const presetRef = useRef(activePreset);
+  const customMinutesRef = useRef(customMinutes);
+  const subjectIdRef = useRef(selectedSubjectId);
+  
+  useEffect(() => { presetRef.current = activePreset; }, [activePreset]);
+  useEffect(() => { customMinutesRef.current = customMinutes; }, [customMinutes]);
+  useEffect(() => { subjectIdRef.current = selectedSubjectId; }, [selectedSubjectId]);
+
   // Sync timer when preset changes
   useEffect(() => {
     setIsRunning(false);
@@ -52,13 +61,39 @@ export const Timer: React.FC = () => {
     }
   }, [activePreset, customMinutes]);
 
-  // Timer countdown logic
+  // Stable completion handler using refs for fresh values
+  const handleTimerCompleteRef = useRef<() => void>(() => {});
+  handleTimerCompleteRef.current = () => {
+    setIsRunning(false);
+    clearInterval(timerRef.current);
+    playCompletionChime();
+    triggerConfetti();
+    
+    const preset = presetRef.current;
+    const mins = customMinutesRef.current;
+    const subjId = subjectIdRef.current;
+    const duration = preset.id === 'custom' ? mins * 60 : preset.duration;
+    
+    setCompletedDuration(duration);
+    setCompletedType(preset.type);
+    setCompletedSubjectId(subjId);
+    
+    if (preset.type === 'focus') {
+      setShowNoteModal(true);
+      setSessionNotes('');
+    } else {
+      logSession(duration, preset.type, 'Completed break session.', subjId || undefined);
+      addNotification('Break Finished!', 'Time to get back to focus!', 'info');
+    }
+  };
+
+  // Timer countdown logic — uses ref-based completion to avoid stale closures
   useEffect(() => {
     if (isRunning) {
       timerRef.current = setInterval(() => {
         setTimeLeft(prev => {
           if (prev <= 1) {
-            handleTimerComplete();
+            handleTimerCompleteRef.current();
             return 0;
           }
           return prev - 1;
@@ -71,29 +106,7 @@ export const Timer: React.FC = () => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isRunning, activePreset, selectedSubjectId]);
-
-  const handleTimerComplete = () => {
-    setIsRunning(false);
-    playCompletionChime();
-    triggerConfetti();
-    
-    const duration = activePreset.id === 'custom' ? customMinutes * 60 : activePreset.duration;
-    
-    // Save details to open notes pop-up
-    setCompletedDuration(duration);
-    setCompletedType(activePreset.type);
-    setCompletedSubjectId(selectedSubjectId);
-    
-    if (activePreset.type === 'focus') {
-      setShowNoteModal(true);
-      setSessionNotes('');
-    } else {
-      // Break completion logged automatically without note modal
-      logSession(duration, activePreset.type, 'Completed break session.', selectedSubjectId || undefined);
-      addNotification('Break Finished!', 'Time to get back to focus!', 'info');
-    }
-  };
+  }, [isRunning]);
 
   const handleSaveNotes = (e: React.FormEvent) => {
     e.preventDefault();
@@ -290,7 +303,7 @@ export const Timer: React.FC = () => {
             
             {/* Quick Skip button */}
             <button
-              onClick={handleTimerComplete}
+              onClick={() => handleTimerCompleteRef.current()}
               className="p-3 bg-neutral-50 hover:bg-neutral-100 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-500 dark:text-neutral-400 rounded-2xl transition-all"
               title="Skip Session"
             >
