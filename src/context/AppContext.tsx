@@ -306,6 +306,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           }));
         }
 
+        // Clear stale localStorage now that we have cloud data
+        localStorage.removeItem('study_subjects');
+        localStorage.removeItem('study_tasks');
+        localStorage.removeItem('study_sessions');
+        localStorage.removeItem('study_habits');
+        localStorage.removeItem('study_stats');
+        localStorage.removeItem('study_achievements');
+        localStorage.removeItem('study_notes');
+        localStorage.removeItem('study_notifications');
+
         console.log('Loaded data from Supabase');
       } catch (error) {
         console.error('Error loading from Supabase:', error);

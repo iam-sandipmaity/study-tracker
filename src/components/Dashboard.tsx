@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import { LucideIcon } from './LucideIcon';
 import type { Task } from '../types';
 
@@ -16,6 +17,9 @@ export const Dashboard: React.FC = () => {
     setActiveSessionTask,
     setActiveTab
   } = useApp();
+
+  const { user } = useAuth();
+  const userDisplayName = (user?.user_metadata?.display_name as string) || user?.email?.split('@')[0] || 'Scholar';
 
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskSubject, setNewTaskSubject] = useState('');
@@ -88,7 +92,7 @@ export const Dashboard: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-neutral-50 mb-1.5">
-            {getGreeting()}, Scholar
+            {getGreeting()}, {userDisplayName}
           </h1>
           <p className="text-neutral-500 dark:text-neutral-400 text-sm">
             Ready to make some progress today? You are level {stats.level}.
