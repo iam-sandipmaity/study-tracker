@@ -11,7 +11,7 @@ interface AuthContextType {
   // Auth methods
   signUp: (email: string, password: string, displayName?: string) => Promise<{ error: AuthError | null }>;
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
-  signInWithOAuth: (provider: 'google' | 'apple') => Promise<{ error: AuthError | null }>;
+  signInWithOAuth: (provider: 'google') => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
   updateProfile: (updates: { display_name?: string; avatar_url?: string }) => Promise<{ error: AuthError | null }>;
@@ -81,7 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error };
   }, [isConfigured]);
 
-  const signInWithOAuth = useCallback(async (provider: 'google' | 'apple') => {
+  const signInWithOAuth = useCallback(async (provider: 'google') => {
     if (!isConfigured) {
       return { error: { message: 'Supabase is not configured' } as AuthError };
     }
