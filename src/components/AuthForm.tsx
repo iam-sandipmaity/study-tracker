@@ -232,9 +232,15 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
           </div>
 
           <div className="animate-slide-up">
-            <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">Welcome back</h1>
+            <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
+              {mode === 'login' ? 'Welcome back' : mode === 'signup' ? 'Create your account' : 'Resend confirmation'}
+            </h1>
             <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-8">
-              Sign in to sync your study data across devices
+              {mode === 'login'
+                ? 'Sign in to sync your study data across devices'
+                : mode === 'signup'
+                  ? 'Start tracking your study progress'
+                  : 'Enter the email you signed up with'}
             </p>
 
             {/* Google OAuth */}
@@ -266,6 +272,19 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
+              {mode === 'signup' && (
+                <div>
+                  <input
+                    type="text"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder="Your name"
+                    required
+                    className="w-full px-4 py-3 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-sm text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200"
+                  />
+                </div>
+              )}
+
               <div>
                 <input
                   type="email"
