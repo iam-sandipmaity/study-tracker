@@ -151,6 +151,43 @@ body {
   animation: pulseDot 2s ease-in-out infinite;
 }
 
+/* Prose content styling for markdown preview */
+.prose-content {
+  line-height: 1.7;
+}
+
+.prose-content > * + * {
+  margin-top: 0.5rem;
+}
+
+.prose-content h1 { margin-top: 1.5rem; margin-bottom: 0.75rem; }
+.prose-content h2 { margin-top: 1.25rem; margin-bottom: 0.5rem; }
+.prose-content h3 { margin-top: 1rem; margin-bottom: 0.5rem; }
+.prose-content h4 { margin-top: 0.75rem; margin-bottom: 0.25rem; }
+
+.prose-content p { margin-bottom: 0.75rem; }
+
+.prose-content pre {
+  margin: 0.75rem 0;
+  overflow-x: auto;
+}
+
+.prose-content table {
+  margin: 0.75rem 0;
+}
+
+.prose-content blockquote {
+  margin: 0.75rem 0;
+}
+
+.prose-content ul, .prose-content ol {
+  margin: 0.5rem 0;
+}
+
+.prose-content hr {
+  margin: 1rem 0;
+}
+
 /* Ambient glow utility */
 .ambient-glow {
   filter: blur(140px);

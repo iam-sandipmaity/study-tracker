@@ -296,8 +296,10 @@ export const Notes: React.FC = () => {
 
                 {/* Markdown Parser HTML Render Panel */}
                 {(previewMode === 'preview' || previewMode === 'split') && (
-                  <div className="h-full p-5 overflow-y-auto text-left flex-1 min-h-0 bg-neutral-50/20 dark:bg-neutral-950/5">
-                    {renderMarkdown(activeNote.content)}
+                  <div className="h-full p-5 overflow-y-auto text-left flex-1 min-h-0 bg-neutral-50/20 dark:bg-neutral-950/5 overscroll-contain">
+                    <div className="prose-content">
+                      {renderMarkdown(activeNote.content)}
+                    </div>
                   </div>
                 )}
               </div>
