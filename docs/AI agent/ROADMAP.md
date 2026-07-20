@@ -17,7 +17,7 @@ Planned features and improvements for Study Tracker.
 - [x] Modern auth form redesign (split layout, animations)
 - [x] Custom logo and favicon
 - [x] User profile page with avatar and display name editing
-- [ ] Test session persistence across devices
+- [x] Test session persistence across devices
 - [ ] Custom email templates in Supabase
 
 ## Phase 2 — Enhanced Study Tools

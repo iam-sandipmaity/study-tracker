@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
 import { LucideIcon } from './LucideIcon';
+import { SyncStatus } from './SyncStatus';
 
 export const Profile: React.FC = () => {
   const { user, updateProfile, isConfigured, signOut } = useAuth();
@@ -231,6 +232,9 @@ export const Profile: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Cloud Sync Status */}
+      <SyncStatus />
 
       {/* Avatar edit panel — slides in below when editing */}
       {editingAvatar && (

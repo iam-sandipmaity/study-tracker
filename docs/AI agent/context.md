@@ -37,6 +37,7 @@ The app is functional with:
 | `src/components/Tasks.tsx` | Kanban board |
 | `src/components/SessionHistory.tsx` | Past sessions |
 | `src/components/Profile.tsx` | User profile, avatar & display name editing |
+| `src/components/SyncStatus.tsx` | Cloud sync verification, table counts, re-sync |
 | `src/lib/supabase.ts` | Supabase client |
 | `src/types.ts` | TypeScript interfaces |
 | `src/index.css` | Tailwind theme + animations |
