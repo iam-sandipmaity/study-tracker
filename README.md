@@ -10,7 +10,7 @@ A gamified study tracker web app with focus timer, task management, subject plan
 - **Analytics** — Weekly bar chart, subject pie chart, GitHub-style heatmap, and stats cards (avg session, completion rate, most active day, peak focus time)
 - **Calendar** — Monthly view with task deadline dots, exam indicators, and a daily agenda sidebar
 - **Habit Tracker** — 6 daily habit categories across a 7-day rolling window with toggle-based logging
-- **Study Notes** — Markdown editor with split-pane preview, subject tagging, and full-text search
+- **Study Notes** — Markdown editor with split-pane preview, subject tagging, full-text search, and rich preview (tables, checklists, code blocks, images)
 - **Session History** — Review past study sessions with notes, duration, subject, and XP earned
 - **Gamification** — XP system, leveling (sqrt-based), 7 achievement badges, confetti + sound effects on unlocks
 - **Command Palette** — Cmd/Ctrl+K powered quick-access to all features

@@ -47,6 +47,5 @@ Persistent context and learned facts about this project.
 ## Known Issues / TODOs
 
 - No test coverage yet
-- Markdown parser is hand-rolled (misses links, tables, images)
 - Some `any` types remain in timer ref and dynamic icon lookup
 - Accessibility audit needed

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { LucideIcon } from './LucideIcon';
+import { renderMarkdown } from '../utils/markdown.tsx';
 import type { Note } from '../types';
 
 export const Notes: React.FC = () => {
@@ -75,100 +76,6 @@ export const Notes: React.FC = () => {
       deleteNote(activeNote.id);
       setActiveNoteId(notes[0]?.id || null);
     }
-  };
-
-  // Custom Markdown Parser to HTML Elements
-  const renderMarkdown = (md: string) => {
-    const lines = md.split('\n');
-    let inCodeBlock = false;
-    let codeContent = '';
-    
-    return lines.map((line, idx) => {
-      // Handle Code Block
-      if (line.trim().startsWith('```')) {
-        if (inCodeBlock) {
-          inCodeBlock = false;
-          const content = codeContent;
-          codeContent = '';
-          return (
-            <pre key={idx} className="bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-xs font-mono p-3 rounded-lg overflow-x-auto mb-3 border border-neutral-200 dark:border-neutral-700">
-              <code>{content}</code>
-            </pre>
-          );
-        } else {
-          inCodeBlock = true;
-          return null;
-        }
-      }
-
-      if (inCodeBlock) {
-        codeContent += line + '\n';
-        return null;
-      }
-
-      // Handle Headers
-      if (line.startsWith('# ')) {
-        return <h1 key={idx} className="text-xl font-bold text-neutral-900 dark:text-white mt-4 mb-2 border-b pb-1 dark:border-neutral-850">{line.slice(2)}</h1>;
-      }
-      if (line.startsWith('## ')) {
-        return <h2 key={idx} className="text-base font-bold text-neutral-900 dark:text-white mt-3 mb-1.5">{line.slice(3)}</h2>;
-      }
-      if (line.startsWith('### ')) {
-        return <h3 key={idx} className="text-sm font-bold text-neutral-800 dark:text-neutral-200 mt-3 mb-1">{line.slice(4)}</h3>;
-      }
-
-      // Handle Blockquotes
-      if (line.startsWith('> ')) {
-        return (
-          <blockquote key={idx} className="border-l-4 border-brand-500 pl-4 py-1 italic text-neutral-500 dark:text-neutral-400 bg-neutral-50 dark:bg-neutral-850/20 text-xs my-2 rounded-r-lg">
-            {line.slice(2)}
-          </blockquote>
-        );
-      }
-
-      // Handle Bullet Lists
-      if (line.startsWith('- ') || line.startsWith('* ')) {
-        return (
-          <li key={idx} className="list-disc ml-5 text-xs text-neutral-750 dark:text-neutral-350 leading-relaxed">
-            {line.slice(2)}
-          </li>
-        );
-      }
-
-      // Handle Checklist Items
-      if (line.startsWith('- [ ] ') || line.startsWith('- [x] ')) {
-        const checked = line.startsWith('- [x] ');
-        return (
-          <div key={idx} className="flex items-center gap-2 text-xs text-neutral-750 dark:text-neutral-350 my-1">
-            <input type="checkbox" checked={checked} readOnly className="rounded text-brand-500" />
-            <span>{line.slice(6)}</span>
-          </div>
-        );
-      }
-
-      // Empty Lines
-      if (!line.trim()) {
-        return <div key={idx} className="h-2.5" />;
-      }
-
-      // Standard Paragraph
-      return (
-        <p key={idx} className="text-xs text-neutral-750 dark:text-neutral-350 leading-relaxed mb-2 text-left">
-          {/* Simple bold/italic replacements */}
-          {line.split('**').map((part, i) => {
-            if (i % 2 === 1) {
-              return <strong key={i} className="font-bold text-neutral-900 dark:text-white">{part}</strong>;
-            }
-            return part.split('*').map((subpart, j) => {
-              if (j % 2 === 1) {
-                return <em key={j} className="italic text-neutral-900 dark:text-white">{subpart}</em>;
-              }
-              return subpart;
-            });
-          })}
-        </p>
-      );
-    });
   };
 
   return (

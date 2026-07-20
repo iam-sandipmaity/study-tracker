@@ -53,6 +53,26 @@ Instead of using `vite-plugin-pwa` (which adds complexity), the PWA setup is man
 
 The auth form uses a split layout on desktop: dark branding panel (left) with a mock dashboard preview, clean form panel (right). This gives users a visual preview of the app before signing up. Mobile shows only the form with the logo at top. Animations use CSS keyframes (slideUp, fadeIn) for smooth entrance.
 
+## Markdown Parser
+
+The markdown parser in `src/utils/markdown.tsx` is a custom React-based parser that converts markdown strings to React elements. It supports:
+
+- Headers (h1-h4)
+- Bold, italic, strikethrough
+- Inline code and code blocks
+- Links and images
+- Blockquotes
+- Bullet and numbered lists
+- Checklists (with checkboxes)
+- Tables (with alignment)
+- Horizontal rules
+
+The parser works in two phases:
+1. **Block-level parsing** — splits by lines, identifies block elements (headers, lists, code blocks, tables)
+2. **Inline parsing** — processes formatting within text (bold, italic, links, code)
+
+This approach avoids external dependencies while providing good markdown support for study notes.
+
 ## What I'd Change Next
 
 1. **Proper markdown rendering** — The current hand-rolled parser handles basics but misses links, tables, images, and inline code. A library like `react-markdown` or `marked` would be more robust.
