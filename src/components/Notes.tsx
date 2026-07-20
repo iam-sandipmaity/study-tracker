@@ -281,11 +281,11 @@ export const Notes: React.FC = () => {
               </div>
 
               {/* Editing and Render split workspace */}
-              <div className="flex-1 flex min-h-0 overflow-hidden bg-white dark:bg-neutral-900">
+              <div className="flex-1 flex min-h-0 bg-white dark:bg-neutral-900">
                 {/* Editor Textarea */}
                 {(previewMode === 'edit' || previewMode === 'split') && (
                   <textarea
-                    className={`h-full p-5 font-mono text-xs text-neutral-800 dark:text-neutral-200 bg-transparent resize-none border-0 focus:outline-hidden flex-1 min-h-0 ${
+                    className={`p-5 font-mono text-xs text-neutral-800 dark:text-neutral-200 bg-transparent resize-none border-0 focus:outline-hidden flex-1 min-h-0 ${
                       previewMode === 'split' ? 'border-r border-neutral-100 dark:border-neutral-850' : ''
                     }`}
                     placeholder="Note Content (Markdown supported)..."
@@ -296,7 +296,7 @@ export const Notes: React.FC = () => {
 
                 {/* Markdown Parser HTML Render Panel */}
                 {(previewMode === 'preview' || previewMode === 'split') && (
-                  <div className="h-full p-5 overflow-y-auto text-left flex-1 min-h-0 bg-neutral-50/20 dark:bg-neutral-950/5 overscroll-contain">
+                  <div className={`p-5 overflow-y-auto text-left flex-1 min-h-0 bg-neutral-50/20 dark:bg-neutral-950/5 overscroll-contain ${previewMode === 'split' ? 'border-l border-neutral-100 dark:border-neutral-850' : ''}`}>
                     <div className="prose-content">
                       {renderMarkdown(activeNote.content)}
                     </div>
