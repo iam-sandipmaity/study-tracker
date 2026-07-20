@@ -93,6 +93,13 @@ export const CommandPalette: React.FC = () => {
       action: () => { setActiveTab('achievements'); setCommandPaletteOpen(false); }
     },
     {
+      id: 'nav-profile',
+      title: 'Go to Profile',
+      subtitle: 'Edit display name and avatar',
+      icon: 'User',
+      action: () => { setActiveTab('profile'); setCommandPaletteOpen(false); }
+    },
+    {
       id: 'theme-toggle',
       title: theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode',
       subtitle: 'Toggle theme display mode',

@@ -31,7 +31,7 @@ Persistent context and learned facts about this project.
 
 - Prefers free tier services over paid
 - Wants modern, clean UI — not "AI generated" look
-- Amber (#F59E0B) as primary accent color
+- Sky Blue (#0ea5e9) as primary accent (brand-500 token)
 - Dark/light theme support
 - Separate commits per logical group of changes
 
@@ -40,9 +40,10 @@ Persistent context and learned facts about this project.
 - `npm run build` must pass clean before committing
 - Components go in `src/components/`
 - State in `src/context/AppContext.tsx`
-- Auth in `src/context/AuthContext.tsx`
+- Auth in `src/context/AuthContext.tsx` (includes `updateProfile()` for user metadata)
 - Types in `src/types.ts`
 - Supabase migrations in `supabase/migrations/`
+- Tab navigation: add navItem + switch case in `App.tsx` + command palette entry in `CommandPalette.tsx`
 
 ## Known Issues / TODOs
 

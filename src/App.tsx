@@ -17,6 +17,7 @@ import { Habits } from './components/Habits';
 import { Notes } from './components/Notes';
 import { Achievements } from './components/Achievements';
 import { SessionHistory } from './components/SessionHistory';
+import { Profile } from './components/Profile';
 import { Logo } from './components/Logo';
 
 const AppContent: React.FC = () => {
@@ -58,7 +59,8 @@ const AppContent: React.FC = () => {
     { id: 'habits', name: 'Habit Tracker', icon: 'Heart' },
     { id: 'notes', name: 'Study Notes', icon: 'PenTool' },
     { id: 'achievements', name: 'Achievements', icon: 'Award' },
-    { id: 'history', name: 'Session History', icon: 'Clock' }
+    { id: 'history', name: 'Session History', icon: 'Clock' },
+    { id: 'profile', name: 'Profile', icon: 'User' }
   ];
 
   // Render active tab content
@@ -73,6 +75,7 @@ const AppContent: React.FC = () => {
       case 'notes': return <Notes />;
       case 'achievements': return <Achievements />;
       case 'history': return <SessionHistory />;
+      case 'profile': return <Profile />;
       default: return <Dashboard />;
     }
   };
@@ -135,7 +138,13 @@ const AppContent: React.FC = () => {
 
         {/* Profile Card / Streaks Footer */}
         <div className="p-4 border-t border-neutral-100 dark:border-neutral-800 bg-neutral-50/40 dark:bg-neutral-900/10">
-          <div className="flex items-center gap-3 bg-white dark:bg-neutral-900 border border-neutral-200/50 dark:border-neutral-800/60 p-3 rounded-xl">
+          <div
+            onClick={() => setActiveTab('profile')}
+            className="flex items-center gap-3 bg-white dark:bg-neutral-900 border border-neutral-200/50 dark:border-neutral-800/60 p-3 rounded-xl cursor-pointer hover:shadow-md transition-all duration-200 group"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setActiveTab('profile'); }}
+          >
             <div className="h-7 w-7 rounded-full bg-brand-100 text-brand-600 dark:bg-brand-950/20 dark:text-brand-400 flex items-center justify-center text-xs font-black">
               {stats.level}
             </div>

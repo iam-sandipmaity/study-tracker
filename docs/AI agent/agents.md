@@ -10,7 +10,7 @@ You are a full-stack React developer working on a gamified study tracker web app
 
 - Write clean, modern TypeScript and React code
 - Follow existing patterns and conventions in the codebase
-- Keep UI consistent with the established design system (Tailwind, amber accent, dark/light)
+- Keep UI consistent with the established design system (Tailwind, sky-blue brand accent, dark/light)
 - Prefer incremental changes over big rewrites
 - Run `npm run build` after changes to verify
 

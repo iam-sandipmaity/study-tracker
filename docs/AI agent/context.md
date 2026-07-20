@@ -22,6 +22,7 @@ The app is functional with:
 - PWA with offline support
 - Dark/light theme
 - Command palette (Cmd+K)
+- User profile page with avatar and display name editing
 
 ## Key Files
 
@@ -35,6 +36,7 @@ The app is functional with:
 | `src/components/Timer.tsx` | Focus timer |
 | `src/components/Tasks.tsx` | Kanban board |
 | `src/components/SessionHistory.tsx` | Past sessions |
+| `src/components/Profile.tsx` | User profile, avatar & display name editing |
 | `src/lib/supabase.ts` | Supabase client |
 | `src/types.ts` | TypeScript interfaces |
 | `src/index.css` | Tailwind theme + animations |
@@ -56,12 +58,13 @@ Without these, app runs in demo mode (localStorage only).
 
 ## UI Design System
 
-- **Primary accent:** Amber (#F59E0B)
-- **Backgrounds:** Stone-50 (light), Neutral-950 (dark)
+- **Primary accent:** Sky Blue (#0ea5e9) via `brand-*` tokens in `index.css`
+- **Backgrounds:** Neutral-Warm-50 (light), Neutral-900 (dark)
 - **Cards:** White (light), Neutral-900 (dark)
 - **Borders:** Neutral-200/60 (light), Neutral-800/60 (dark)
-- **Font:** System font stack
-- **Border radius:** xl (0.75rem) for cards, lg for buttons
+- **Font:** Inter (Google Fonts, loaded via CSS `@import`)
+- **Border radius:** 2xl/3xl for cards, xl for buttons and inputs
+- **Extended neutral shades:** 150, 250, 350, 450, 550, 750, 850 (filling gaps in default scale)
 
 ## Common Tasks
 

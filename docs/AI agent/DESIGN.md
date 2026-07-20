@@ -27,7 +27,7 @@ The app's state is mostly CRUD-based with localStorage persistence. React Contex
 
 ## Why No Router
 
-Navigation is flat — 9+ top-level views with no nested routes or URL-based deep linking. A string-based `activeTab` state is simpler and avoids the bundle size of react-router. If URL routing becomes needed (e.g., shareable links to specific tasks), adding react-router would be straightforward since each view is a self-contained component.
+Navigation is flat — 11 top-level views (dashboard, timer, tasks, subjects, analytics, calendar, habits, notes, achievements, history, profile) with no nested routes or URL-based deep linking. A string-based `activeTab` state is simpler and avoids the bundle size of react-router. If URL routing becomes needed (e.g., shareable links to specific tasks), adding react-router would be straightforward since each view is a self-contained component.
 
 ## Tailwind CSS 4 (CSS-First Config)
 
@@ -71,11 +71,15 @@ The parser works in two phases:
 1. **Block-level parsing** — splits by lines, identifies block elements (headers, lists, code blocks, tables)
 2. **Inline parsing** — processes formatting within text (bold, italic, links, code)
 
-This approach avoids external dependencies while providing good markdown support for study notes.
+This approach avoids external dependencies while providing good markdown support for study notes. A library like `react-markdown` would be more robust but adds bundle size.
+
+## Profile Page
+
+The profile page (`src/components/Profile.tsx`) is a self-contained component that uses `AuthContext` for user data and `updateProfile()` to persist changes to Supabase user metadata. Avatar editing supports both URL input and file upload (converted to base64 data URL). The UI follows the app's pattern: one main card with avatar + name + email, inline editing (no modals), and a compact account info row. The page is registered in the same way as all other tabs — navItem in `App.tsx`, switch case in `renderContent`, and command palette entry.
 
 ## What I'd Change Next
 
-1. **Proper markdown rendering** — The current hand-rolled parser handles basics but misses links, tables, images, and inline code. A library like `react-markdown` or `marked` would be more robust.
-2. **Type safety improvements** — Some components use `any` types (e.g., timer ref, dynamic icon lookup). Tightening these would catch more bugs at compile time.
-3. **Accessibility audit** — Many interactive elements lack proper ARIA labels, focus management, and keyboard navigation beyond the command palette.
-4. **Test coverage** — Currently zero tests. Adding Vitest + React Testing Library for critical paths (timer logic, task CRUD, achievement unlocking) would prevent regressions.
+1. **Type safety improvements** — Some components use `any` types (e.g., timer ref, dynamic icon lookup). Tightening these would catch more bugs at compile time.
+2. **Accessibility audit** — Many interactive elements lack proper ARIA labels, focus management, and keyboard navigation beyond the command palette.
+3. **Test coverage** — Currently zero tests. Adding Vitest + React Testing Library for critical paths (timer logic, task CRUD, achievement unlocking) would prevent regressions.
+4. **Avatar storage** — Current profile avatar uses base64 data URLs stored in Supabase user metadata. For production, Supabase Storage buckets would be more efficient.

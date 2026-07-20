@@ -16,7 +16,7 @@ Planned features and improvements for Study Tracker.
 - [x] Data export/import (JSON)
 - [x] Modern auth form redesign (split layout, animations)
 - [x] Custom logo and favicon
-- [ ] User profile page with avatar and display name editing
+- [x] User profile page with avatar and display name editing
 - [ ] Test session persistence across devices
 - [ ] Custom email templates in Supabase
 
